@@ -48,6 +48,7 @@ const changeFile = async (e: any) => {
 <style lang="less" scoped>
 .upload-wrap {
   padding: 1rem 1.5rem;
+  display: flex;
   .box {
     border: 1px solid rgb(142, 142, 142);
     width: 120px;

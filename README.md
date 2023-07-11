@@ -2,7 +2,7 @@
 
 给图片加水印
 
-[预览](https://aaaaaa-11.github.io/vue3-watermark)
+[预览](http://dongpeipei.top/vue3-watermark/)
 
 
 

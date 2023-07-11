@@ -3,8 +3,10 @@
     <a-col>
       <canvas class="canvas" ref="canvas" :width="CANVAS_WIDTH" :height="CANVAS_HEIGHT"></canvas>
       <img :src="imgUrl" alt="" ref="img" @load="draw" class="canvas-img" crossorigin="anonymous">
+      <a-divider />
+      <p>若要保存图片，可在图片上右键 -> 图片存储为 -> ...</p>
     </a-col>
-    <a-col>
+    <a-col class="col right">
       <a-form 
         :model="markOption"
         name="basic"
@@ -12,13 +14,12 @@
         :label-col="{ span: 8 }"
         :wrapper-col="{ span: 16 }"
         autocomplete="off"
-        @finish="addWaterMark"
-        class="col right">
+        @finish="addWaterMark">
         <a-form-item label="水印文字" name="text" :rules="[{required: true}]">
           <a-input type="text" v-model:value="markOption.text" placeholder="请输入水印文字" />
         </a-form-item>
         <a-form-item label="水印颜色" name="color" :rules="[{required: true}]">
-          <v3-color-picker v-model:value="markOption.color" theme="light" :width="300"></v3-color-picker>
+          <v3-color-picker size="small" v-model:value="markOption.color" theme="light" :width="300"></v3-color-picker>
         </a-form-item>
         <a-form-item label="文字大小：" name="fontSize" :rules="[{required: true}]">
           <a-input type="number" v-model:value="markOption.fontSize" />
@@ -39,9 +40,11 @@
           <a-input type="number" v-model:value="markOption.rotate" :min="-180" :max="180" />
         </a-form-item>
         <a-form-item :wrapper-col="{ offset: 8 }">
-          <a-button @click="clearText">清空文字</a-button>
-          <a-button @click="undo(1)">清除上一次添加的文字</a-button>
-          <a-button type="primary" html-type="submit">确认</a-button>
+          <a-space>
+            <a-button @click="clearText">清空所有文字</a-button>
+            <a-button @click="undo(1)">清除上一次添加的文字</a-button>
+            <a-button type="primary" html-type="submit">确认</a-button>
+          </a-space>
         </a-form-item>
       </a-form>
     </a-col>
@@ -53,6 +56,7 @@ import { ref, reactive, watch, onMounted } from 'vue'
 import type { FormInstance } from 'ant-design-vue';
 import { message } from 'ant-design-vue'
 import { V3ColorPicker } from 'v3-color-picker';
+import type { MarkOption } from '../../types/index.d.ts'
 
 const CANVAS_WIDTH = 400
 const CANVAS_HEIGHT = 300
@@ -63,23 +67,27 @@ const props = defineProps<{
 
 const canvas = ref<HTMLCanvasElement>()
 const img = ref<HTMLImageElement>()
-const markOption = reactive({
+
+const markOption = reactive<MarkOption>({
   text: null,
   color: '#000000',
-  fontSize: 10,
+  fontSize: 100,
   fontFamily: '微软雅黑',
   fontWeight: 'normal',
-  rotate: 0,
+  rotate: 45,
   left: 0,
   top: 0
 })
+
 const formRef = ref<FormInstance>()
 
 let imgStore: any = []
 const saveImgData = () => {
   const canvasEl = canvas.value
-  const ctx = canvasEl?.getContext('2d')
-  ctx && imgStore.push(ctx.getImageData(0, 0, canvasEl.width, canvasEl.height))
+  if (canvasEl) {
+    const ctx = canvasEl.getContext('2d')
+    ctx && imgStore.push(ctx.getImageData(0, 0, canvasEl.width, canvasEl.height))
+  }
 }
 
 // 上传图片后在canvas中绘制图片
@@ -96,7 +104,7 @@ const draw = () => {
 
     const ctx = (canvasEl as HTMLCanvasElement).getContext("2d")
     // 清空画布和缓存
-    ctx?.clearRect(0, 0, canvasEl.width, canvas.height)
+    ctx?.clearRect(0, 0, canvasEl.width, canvasEl.height)
     imgStore = []
 
     const imgH = imgEl.naturalHeight
@@ -147,8 +155,9 @@ const addWaterMark = () => {
       ctx.textBaseline = "middle";
       ctx.font = `${markOption.fontWeight} ${markOption.fontSize}px ${markOption.fontFamily}`;
       ctx.rotate(markOption.rotate * Math.PI/180)
-      ctx.fillText(markOption.text, markOption.left, markOption.top);
+      ctx.fillText((markOption.text as string), markOption.left, markOption.top);
       saveImgData()
+      ctx.rotate(-markOption.rotate * Math.PI/180) // 反向还原角度
     }
   }
 }
@@ -178,7 +187,6 @@ watch(
   }
   .right {
     flex: 1;
-    padding: 2rem 1rem;
   }
 }
 </style>
