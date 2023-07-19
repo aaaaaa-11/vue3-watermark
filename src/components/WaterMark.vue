@@ -197,9 +197,9 @@ const addWaterMark = () => {
       ctx.font = `${markOption.fontWeight} ${markOption.fontSize}px ${markOption.fontFamily}`
       ctx.rotate((markOption.rotate * Math.PI) / 180)
       ctx.fillStyle = markOption.bgColor
-      const { width } = ctx.measureText(markOption.text)
+      const { width } = ctx.measureText(markOption.text as string)
       ctx.fillRect(markOption.left, markOption.top, width, +markOption.fontSize)
-      ctx.textBaseline = markOption.textBaseline
+      ctx.textBaseline = markOption.textBaseline as CanvasTextBaseline
       ctx.fillStyle = markOption.color
       ctx.fillText(markOption.text as string, markOption.left, markOption.top)
       saveImgData()
