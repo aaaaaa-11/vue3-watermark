@@ -1,6 +1,9 @@
 <template>
   <div class="upload-wrap">
-    <p>上传图片：</p>
+    <div class="label">
+      <p>上传图片：</p>
+      <p>（不会上传服务器）</p>
+    </div>
     <div class="box" @click="uploadImg">
       <input ref="input" type="file" accept="image/*" @change="changeFile">
       <span v-show="!imgUrl" class="upload-icon">+</span>
@@ -8,7 +11,6 @@
       <img v-show="imgUrl" class="img" :src="imgUrl" alt="" srcset="" crossorigin="anonymous">
     </div>
   </div>
-  <hr>
 </template>
 
 <script setup lang="ts">
@@ -47,18 +49,24 @@ const changeFile = async (e: any) => {
 
 <style lang="less" scoped>
 .upload-wrap {
-  padding: 1rem 1.5rem;
   display: flex;
+  margin-bottom: 2rem;
+  .label {
+    text-align: right;
+    width: 189px;
+  }
   .box {
-    border: 1px solid rgb(142, 142, 142);
+    border: 1px dashed rgb(215, 215, 215);
     width: 120px;
     height: 120px;
+    border-radius: 2px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     position: relative;
     background-color: white;
+    color: gray;
     cursor: pointer;
     input {
       width: 0;
@@ -66,8 +74,8 @@ const changeFile = async (e: any) => {
     }
     .upload-icon {
       font-size: 32px;
-      height: 32px;
-      line-height: 32px;
+      line-height: 36px;
+      color: rgb(160, 160, 160);
     }
     .img {
       width: 119px;
